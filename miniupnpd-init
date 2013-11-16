@@ -1,0 +1,105 @@
+#!/bin/sh
+# $Id: miniupnpd.init.d.script,v 1.2 2007/09/23 16:11:12 nanard Exp $
+#
+# chkconfig: 2345 80 01
+# description: This daemon is required for the  UPnP Internet gateway device
+# processname: miniupnpd
+# pidfile: /var/run/miniupnpd.pid
+# config:  /etc/miniupnpd/miniupnpd.conf
+#
+# MiniUPnP project
+# author: Thomas Bernard
+# modified: Tim Burgess (compatibility with ClearOS)
+# website: http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
+
+MINIUPNPD=/usr/sbin/miniupnpd
+CONFIG=/etc/miniupnpd/miniupnpd.conf
+
+#IPTABLES_CREATE=/etc/miniupnpd/iptables_init.sh
+#IPTABLES_REMOVE=/etc/miniupnpd/iptables_removeall.sh
+
+test -f $MINIUPNPD || exit 0
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+# Source auto-configure functions
+[ -e /etc/init.d/functions-automagic ] && source /etc/init.d/functions-automagic
+[ -e /etc/sysconfig/automagic ] && source /etc/sysconfig/automagic
+
+prog="miniupnpd"
+RETVAL=0
+
+networksetup() {
+        if [ "$AUTOMAGIC" != "off" ]; then
+	        for IF in $AUTOMAGIC_LANIFS; do
+			# enumerate LAN's in the form '-a InterfaceIP/subnet'
+        	        UPNP_LANNETS="$UPNP_LANNETS -a `ip addr show dev $IF | grep "inet " | awk '{ print $2 }'`"
+			/sbin/route add -net 239.0.0.0 netmask 255.0.0.0 $IF 2>/dev/null
+	        done
+
+                # Only one LAN interface allowed for presentation URL
+                UPNP_LAN=`echo $AUTOMAGIC_LANIFS | awk '{ print $1 }'`
+		# Only one WAN interface (for now)
+                UPNP_WAN=`echo $AUTOMAGIC_EXTIFS | awk '{ print $1 }'`
+        fi
+
+        if ( [ -z "$UPNP_WAN" ] || [ -z "$UPNP_LAN" ] ) then
+                echo -n $"Network configuration missing"
+                failure
+                echo
+                exit 1
+        fi
+
+        UPNP_WEB_URL=`ip addr show dev $UPNP_LAN | grep "inet " | awk '{ print $2 }' | sed 's/\/.*/:81/'`
+	ARGS="-f $CONFIG -i $UPNP_WAN $UPNP_LANNETS -w https://$UPNP_WEB_URL"
+
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        echo -n $"Starting $prog: "
+        networksetup
+	daemon $MINIUPNPD $ARGS
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/miniupnpd
+        ;;
+  stop)
+        echo -n $"Stopping $prog: "
+        for IF in $AUTOMAGIC_LANIFS; do
+              /sbin/route del -net 239.0.0.0 netmask 255.0.0.0 $IF 2>/dev/null
+        done
+	killproc miniupnpd
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/miniupnpd
+        ;;
+  status)
+        status miniupnpd
+        RETVAL=$?
+        ;;
+  restart|reload)
+        $0 stop
+        $0 start
+        RETVAL=$?
+        ;;
+  condrestart)
+        if test "x`/sbin/pidof miniupnpd`" != x; then
+                $0 stop
+                $0 start
+                RETVAL=$?
+        fi
+        ;;
+  *)
+        echo "Usage: $prog {start|stop|restart|reload|condrestart|status}"
+        exit 1
+esac
+
