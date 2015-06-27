@@ -1,28 +1,26 @@
 Summary: MiniUPNPD Lightweight UPNP Daemon
 URL: http://miniupnp.free.fr/files/
 Name: miniupnpd
-Version: 1.6.20120121
-Group: Network/Other
-Release: 6%{?dist}
+Version: 1.9.20150609
+Group: System Environment/Daemons
+Release: 1%{?dist}
 License: See Source
 Source0: %{name}-%{version}.tar.gz
-Source1: miniupnpd-init
+Source1: miniupnpd.service
 Source2: miniupnpd.conf
-Patch1: miniupnpd-1.6.20120121-clearos.patch
+Source3: miniupnpd.sysconfig
+Patch1: miniupnpd-1.9.20150609-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: iptables-devel
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 Requires: iptables
 
 %description
-The MiniUPnP daemon is an UPnP IGD (internet gateway device)which provide NAT traversal services to any UPnP enabled client on
-the network.
-See http://www.upnp.org/ for more details on UPnP.
-
-Later, support for the NAT Port Mapping Protocol (NAT-PMP) was added. See information about NAT-PMP here :
-http://miniupnp.free.fr/nat-pmp.html
-
-Copyright (c) 2006-2009, Thomas BERNARD
-All rights reserved.
+The MiniUPnP daemon is an UPnP IGD (internet gateway device) which provide NAT
+traversal services to any UPnP enabled client on the network.
 
 %prep
 %setup -q 
@@ -37,29 +35,36 @@ make -f Makefile.linux
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 make -f Makefile.linux install PREFIX="%{buildroot}"
-install -D -m0755 %{SOURCE1} %{buildroot}/etc/init.d/miniupnpd
-install -D -m0755 %{SOURCE2} %{buildroot}/etc/miniupnpd/miniupnpd.conf
+
+rm -f %{buildroot}%{_sysconfdir}/init.d/miniupnpd
+install -D -m0755 %{SOURCE1} %{buildroot}%{_unitdir}/miniupnpd.service
+install -D -m0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/miniupnpd/miniupnpd.conf
+install -D -m0755 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/miniupnpd
 install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 
-%clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
 %post
-/sbin/chkconfig --add miniupnpd
+%systemd_post miniupnpd.service
 
 %preun
-/sbin/service miniupnpd stop
-/sbin/chkconfig --del miniupnpd
+%systemd_preun miniupnpd.service
+
+%postun
+%systemd_postun_with_restart miniupnpd.service
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/miniupnpd/miniupnpd.conf
-/usr/sbin/miniupnpd
-/etc/init.d/miniupnpd
-/etc/miniupnpd/
+%config(noreplace) %{_sysconfdir}/miniupnpd/miniupnpd.conf
+%config(noreplace) %{_sysconfdir}/sysconfig/miniupnpd
+%{_sysconfdir}/miniupnpd/*sh
+%{_mandir}/man8/miniupnpd.*
+%{_sbindir}/miniupnpd
+%{_unitdir}/%{name}.service
 /var/lib/miniupnpd
 
 %changelog
+* Fri Jun 26 2015 Peter Baldwin <peter@egloo.ca> - 1.9.20150609-1
+- Updated for ClearOS 7, systemd
+
 * Mon Nov 18 2013 ClearFoundation <developer@clearfoundation.com> - 1.6.20120121-6
 - Standardized configuration file name
 - Migrated to git
@@ -73,10 +78,10 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 * Fri Apr 27 2012 Tim Burgess <trburgess@gmail.com> - 1.6.20120121-3
 - Remove dist, vendor tags
 
-* Mon Mar 11 2012 Peter Baldwin <pbaldwin@clearfoundation.com> - 1.6.20120121-2
+* Mon Mar 12 2012 Peter Baldwin <pbaldwin@clearfoundation.com> - 1.6.20120121-2
 - Enabled lease file support
 
-* Fri Feb 23 2012 Peter Baldwin <pbaldwin@clearfoundation.com> - 1.6.20120121-1
+* Fri Feb 24 2012 Peter Baldwin <pbaldwin@clearfoundation.com> - 1.6.20120121-1
 - Imported into build system
 
 * Thu Mar 10 2011 Tim Burgess <timb80@yahoo.com> - 1.5.20110309

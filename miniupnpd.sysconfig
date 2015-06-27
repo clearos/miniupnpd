@@ -1,0 +1,5 @@
+# On a ClearOS system with app-miniupnpd package installed, these values
+# are updated automatically.
+MINIUPNPD_WAN="-i lo"
+MINIUPNPD_LANS="-a lo"
+MINIUPNPD_URL="-w https://192.168.1.1:81"
