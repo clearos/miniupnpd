@@ -5,10 +5,12 @@ After=network.target
 
 [Service]
 Type=forking
-EnvironmentFile=-/etc/sysconfig/miniupnpd
-ExecStart=/usr/sbin/miniupnpd \
- -f /etc/miniupnpd/miniupnpd.conf \
- $MINIUPNPD_WAN $MINIUPNPD_LANS $MINIUPNPD_URL
+ExecStartPre=-/etc/miniupnpd/iptables_removeall_clearos.sh
+ExecStartPre=-/etc/miniupnpd/iptables_init.sh
+ExecStartPre=-/etc/miniupnpd/init_clearos.sh
+ExecStart=/usr/sbin/miniupnpd -f /etc/miniupnpd/miniupnpd.conf $MINIUPNPD_OPTIONS
+ExecStartPost=-/usr/bin/systemctl unset-environment MINIUPNPD_OPTIONS
+ExecStopPost=-/etc/miniupnpd/iptables_removeall_clearos.sh
 
 Restart=always
 RestartSec=1

@@ -1,15 +1,18 @@
 Summary: MiniUPNPD Lightweight UPNP Daemon
 URL: http://miniupnp.free.fr/files/
 Name: miniupnpd
-Version: 1.9.20150609
+Version: 2.0.20180203
 Group: System Environment/Daemons
 Release: 1%{?dist}
 License: See Source
 Source0: %{name}-%{version}.tar.gz
 Source1: miniupnpd.service
 Source2: miniupnpd.conf
-Source3: miniupnpd.sysconfig
-Patch1: miniupnpd-1.9.20150609-clearos.patch
+#Source3: miniupnpd.sysconfig
+Source4: init_clearos.sh
+Source5: iptables_removeall_clearos.sh
+
+Patch1: miniupnpd-2.0.20180203-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: iptables-devel
 BuildRequires:  systemd
@@ -24,7 +27,7 @@ traversal services to any UPnP enabled client on the network.
 
 %prep
 %setup -q 
-%patch1 -p1
+#%patch1 -p1
 
 %build
 make -f Makefile.linux config.h
@@ -37,9 +40,11 @@ make -f Makefile.linux
 make -f Makefile.linux install PREFIX="%{buildroot}"
 
 rm -f %{buildroot}%{_sysconfdir}/init.d/miniupnpd
-install -D -m0755 %{SOURCE1} %{buildroot}%{_unitdir}/miniupnpd.service
+install -D -m0644 %{SOURCE1} %{buildroot}%{_unitdir}/miniupnpd.service
 install -D -m0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/miniupnpd/miniupnpd.conf
-install -D -m0755 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/miniupnpd
+#install -D -m0755 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/miniupnpd
+install -D -m0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/miniupnpd/init_clearos.sh
+install -D -m0755 %{SOURCE5} %{buildroot}%{_sysconfdir}/miniupnpd/iptables_removeall_clearos.sh
 install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 
 %post
@@ -54,7 +59,7 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/miniupnpd/miniupnpd.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/miniupnpd
+#%config(noreplace) %{_sysconfdir}/sysconfig/miniupnpd
 %{_sysconfdir}/miniupnpd/*sh
 %{_mandir}/man8/miniupnpd.*
 %{_sbindir}/miniupnpd
@@ -62,6 +67,11 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 /var/lib/miniupnpd
 
 %changelog
+* Sat Feb 10 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
+- Updated miniupnpd to 2.0.20180203-1
+- Remove dependency on firewall.lua
+- Change auto-configuration of interfaces
+
 * Fri Jun 26 2015 Peter Baldwin <peter@egloo.ca> - 1.9.20150609-1
 - Updated for ClearOS 7, systemd
 
