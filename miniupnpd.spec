@@ -12,7 +12,7 @@ Source2: miniupnpd.conf
 Source4: init_clearos.sh
 Source5: iptables_removeall_clearos.sh
 
-Patch1: miniupnpd-2.0.20180203-clearos.patch
+#Patch1: miniupnpd-2.0.20180203-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: iptables-devel
 BuildRequires:  systemd
