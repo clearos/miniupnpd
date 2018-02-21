@@ -11,6 +11,9 @@ Source2: miniupnpd.conf
 #Source3: miniupnpd.sysconfig
 Source4: init_clearos.sh
 Source5: iptables_removeall_clearos.sh
+Source6: 80-miniupnpd
+
+
 
 #Patch1: miniupnpd-2.0.20180203-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -45,6 +48,7 @@ install -D -m0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/miniupnpd/miniupnpd.conf
 #install -D -m0755 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/miniupnpd
 install -D -m0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/miniupnpd/init_clearos.sh
 install -D -m0755 %{SOURCE5} %{buildroot}%{_sysconfdir}/miniupnpd/iptables_removeall_clearos.sh
+install -D -m0755 %{SOURCE6} %{buildroot}%{_sysconfdir}/clearos/firewall.d/40-miniupnpd
 install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 
 %post
@@ -67,6 +71,9 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 /var/lib/miniupnpd
 
 %changelog
+* Wed Feb 21 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
+- Add 40-miniupnpd to restart service on firewall restart
+
 * Sat Feb 10 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
 - Updated miniupnpd to 2.0.20180203-1
 - Remove dependency on firewall.lua
