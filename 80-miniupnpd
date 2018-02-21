@@ -1,5 +1,0 @@
-if [ "$FW_PROTO" == "ipv4" ]; then
-
-	[ -e /run/miniupnpd.pid ] && systemctl restart miniupnpd.service
-
-fi

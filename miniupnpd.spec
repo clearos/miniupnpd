@@ -11,9 +11,7 @@ Source2: miniupnpd.conf
 #Source3: miniupnpd.sysconfig
 Source4: init_clearos.sh
 Source5: iptables_removeall_clearos.sh
-Source6: 80-miniupnpd
-
-
+Source6: 40-miniupnpd
 
 #Patch1: miniupnpd-2.0.20180203-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -69,6 +67,7 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 %{_sbindir}/miniupnpd
 %{_unitdir}/%{name}.service
 /var/lib/miniupnpd
+%{_sysconfdir}/clearos/firewall.d/40-miniupnpd
 
 %changelog
 * Wed Feb 21 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
