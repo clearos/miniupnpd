@@ -67,6 +67,7 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 %{_sbindir}/miniupnpd
 %{_unitdir}/%{name}.service
 /var/lib/miniupnpd
+%{_sysconfdir}/clearos/firewall.d/40-miniupnpd
 
 %changelog
 * Wed Feb 21 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
