@@ -1,0 +1,5 @@
+if [ "$FW_PROTO" == "ipv4" ]; then
+
+	systemctl condrestart miniupnpd.service
+
+fi
