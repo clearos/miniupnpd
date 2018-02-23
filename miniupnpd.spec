@@ -114,3 +114,4 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 
 * Sat Nov 27 2010 Tim Burgess <timb80@yahoo.com> - 1.4.20100921-1
 - First build
+
