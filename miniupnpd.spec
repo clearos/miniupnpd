@@ -73,8 +73,8 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 %config(noreplace) %{_sysconfdir}/miniupnpd/miniupnpd_clearos.conf
 
 %changelog
-* Wed Feb 23 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-3
-- Add 40-miniupnpd to restart service on firewall restart
+* Fri Feb 23 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-3
+- Add miniupnpd_clearos.conf for HOTLAN
 
 * Wed Feb 21 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
 - Add 40-miniupnpd to restart service on firewall restart
