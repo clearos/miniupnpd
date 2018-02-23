@@ -3,7 +3,7 @@ URL: http://miniupnp.free.fr/files/
 Name: miniupnpd
 Version: 2.0.20180203
 Group: System Environment/Daemons
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: See Source
 Source0: %{name}-%{version}.tar.gz
 Source1: miniupnpd.service
@@ -12,6 +12,7 @@ Source2: miniupnpd.conf
 Source4: init_clearos.sh
 Source5: iptables_removeall_clearos.sh
 Source6: 40-miniupnpd
+Source7: miniupnpd_clearos.conf
 
 #Patch1: miniupnpd-2.0.20180203-clearos.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -47,6 +48,7 @@ install -D -m0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/miniupnpd/miniupnpd.conf
 install -D -m0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/miniupnpd/init_clearos.sh
 install -D -m0755 %{SOURCE5} %{buildroot}%{_sysconfdir}/miniupnpd/iptables_removeall_clearos.sh
 install -D -m0755 %{SOURCE6} %{buildroot}%{_sysconfdir}/clearos/firewall.d/40-miniupnpd
+install -D -m0755 %{SOURCE7} %{buildroot}%{_sysconfdir}/miniupnpd/miniupnpd_clearos.conf
 install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 
 %post
@@ -68,8 +70,12 @@ install -d -D -m0755 %{buildroot}/var/lib/miniupnpd
 %{_unitdir}/%{name}.service
 /var/lib/miniupnpd
 %{_sysconfdir}/clearos/firewall.d/40-miniupnpd
+%config(noreplace) %{_sysconfdir}/miniupnpd/miniupnpd_clearos.conf
 
 %changelog
+* Fri Feb 23 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-3
+- Add miniupnpd_clearos.conf for HOTLAN
+
 * Wed Feb 21 2018 Nick Howitt <nhowitt@clearcenter.com> - 2.0.20180203-1
 - Add 40-miniupnpd to restart service on firewall restart
 
