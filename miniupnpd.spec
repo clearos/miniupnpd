@@ -3,7 +3,7 @@ URL: http://miniupnp.free.fr/files/
 Name: miniupnpd
 Version: 2.0.20180203
 Group: System Environment/Daemons
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: See Source
 Source0: %{name}-%{version}.tar.gz
 Source1: miniupnpd.service

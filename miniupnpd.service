@@ -8,8 +8,8 @@ Type=forking
 ExecStartPre=-/etc/miniupnpd/iptables_removeall_clearos.sh
 ExecStartPre=-/etc/miniupnpd/iptables_init.sh
 ExecStartPre=-/etc/miniupnpd/init_clearos.sh
-ExecStart=/usr/sbin/miniupnpd -f /etc/miniupnpd/miniupnpd.conf $MINIUPNPD_OPTIONS
-ExecStartPost=-/usr/bin/systemctl unset-environment MINIUPNPD_OPTIONS
+ExecStart=/usr/sbin/miniupnpd -f /etc/miniupnpd/miniupnpd.conf $MINIUPNPD_START_OPTIONS
+ExecStartPost=-/usr/bin/systemctl unset-environment MINIUPNPD_START_OPTIONS
 ExecStopPost=-/etc/miniupnpd/iptables_removeall_clearos.sh
 
 Restart=always
